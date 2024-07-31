@@ -5,11 +5,62 @@
            :wm-ignore true
            :geometry (geometry
                       :width "100%"
-                      :height "2%"
+                      :height "3%"
                       :anchor "top center")
-           (test-widget))
+           (container))
 
-(defwidget test-widget []
+(defwidget container []
+           (box
+            :class "container"
+            :hexpand true :vexpand true
+            :orientation "horizontal"
+            (workspaces)
+            (timeWid)))
+
+(defpoll time
+         :interval "1s"
+         :initial "initial-value"
+         `date '+%I:%M:%S %p'`)
+
+(defwidget timeWid []
            (label
-            :class "test"
-            :text "Some test?"))
+            :class "time"
+            :halign "end"
+            :text "${time}"))
+
+(defpoll workspacesJson
+         :interval "1s"
+         :initial `[{"id": 1}]`
+           `hyprctl -j workspaces`)
+
+(defpoll activeWorkspace
+         :interval "1s"
+         :initial `[{"id": 1}]`
+         `hyprctl -j activeworkspace`)
+
+(defwidget workspaces []
+           (box
+            :class "workspaceContainer"
+            :halign "start" :valign "center"
+            :spacing 10 
+            :orientation "h"
+
+            (for workspace in workspacesJson
+                 (button
+                  :class {activeWorkspace.id == workspace.id ? "w-btn w-btn-act" : "w-btn w-btn-inact"}
+                  :onclick "hyprctl dispatch workspace ${workspace.id}"))))
+
+
+;; (defwidget workspaces []
+;;            (box
+;;             :class "workspaceContainer"
+;;             :halign "start" :valign "center"
+;;             :spacing 10 
+;;             :orientation "h"
+
+;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 1")
+;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 2")
+;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 3")
+;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 4")
+;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 5")))
+

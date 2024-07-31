@@ -7,9 +7,42 @@ $orange: #FF9C32;
 $majenta: #FF79C6;
 $blue: #7CCCDF;
 
-.test {
+* {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    box-shadow: none;
+}
+
+.container {
     color: $foreground;
     background-color: $background;
+}
+
+.time {
+    font-family: "Mononoki Nerd Font";
+    font-size: 20px;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.workspaceContainer {
+    margin-left: 10px;
+}
+
+.w-btn {
+    border: none;
+    border-radius: 0px;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+.w-btn-act {
+    background: $violet;
+}
+
+.w-btn-inact {
+    background: $background2;
 }
 
 
