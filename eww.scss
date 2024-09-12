@@ -12,14 +12,15 @@ $blue: #7CCCDF;
     margin: 0px;
     border: none;
     box-shadow: none;
+    text-shadow: none;
 }
 
 .container {
-    color: $foreground;
-    background-color: $background;
+    background: $background;
 }
 
-.time {
+.text {
+    color: $foreground;
     font-family: "Mononoki Nerd Font";
     font-size: 20px;
     font-weight: bold;
@@ -45,4 +46,49 @@ $blue: #7CCCDF;
     background: $background2;
 }
 
+.lang {
+    color: $background;
+    background: $majenta;
+    padding-right: 10px;
+    padding-left: 10px;
+    border: none;
+    border-radius: 0px;
+}
 
+.updates {
+    color: $background;
+    background: $blue;
+    padding-right: 10px;
+    padding-left: 10px;
+    border: none;
+    border-radius: 0;
+    margin-right: -10px;
+}
+
+.volume-text {
+    color: $foreground;
+    font-family: "Mononoki Nerd Font";
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.volume-progress > trough {
+    background-color: $background2;
+    min-height: 40px;
+    border-radius: 0;
+    border: 5px solid $background2;
+}
+
+.volume-progress > trough > progress {
+    background-color: $violet;
+    min-height: 40px;
+}
+
+.lang-popup {
+    color: $foreground;
+    font-family: "Mononoki Nerd Font";
+    font-size: 80px;
+    font-weight: bold;
+    background-color: $background;
+    border: 2px solid $violet;
+}

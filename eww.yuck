@@ -1,3 +1,49 @@
+(defwindow language-win
+           :monitor 0
+           :stacking "fg"
+           :wm-ignore true
+           :geometry (geometry
+                      :width "6%"
+                      :y "15%"
+                      :anchor "bottom center")
+            (language-popup-lbl))
+
+(defwidget language-popup-lbl []
+           (label
+            :class "lang-popup"
+            :text "${device.active_keymap == 'English (US)' ? 'US' : 'RU'}"))
+
+(defwindow volume-meter
+           :monitor 0
+           :stacking "fg"
+           :exclusive false
+           :wm-ignore true
+           :geometry (geometry
+                      :width "30%"
+                      :y "15%"
+                      :anchor "bottom center")
+           (volume))
+
+(defvar volume-visible false)
+
+(defpoll volume-value
+         :interval "10ms"
+         :initial-value "50"
+         :run-while volume-visible
+         "pamixer --get-volume")
+
+(defwidget volume []
+           (overlay
+            (progress
+             :class "volume-progress"
+             :value volume-value
+
+             :orientation "h")
+            (label
+             :class "volume-text"
+             :text "${volume-value} / 100")
+            ))
+
 (defwindow status-bar
            :monitor 0
            :stacking "fg"
@@ -14,8 +60,20 @@
             :class "container"
             :hexpand true :vexpand true
             :orientation "horizontal"
+            :spacing 10
+            :space-evenly false
             (workspaces)
+            (winTitle)
+            (space)
+            (tray)
+            (updates)
+            (language)
             (timeWid)))
+
+(defwidget space []
+           (label
+            :hexpand true
+            :text ""))
 
 (defpoll time
          :interval "1s"
@@ -24,14 +82,15 @@
 
 (defwidget timeWid []
            (label
-            :class "time"
+            :class "text"
             :halign "end"
             :text "${time}"))
 
 (defpoll workspacesJson
          :interval "1s"
-         :initial `[{"id": 1}]`
-           `hyprctl -j workspaces`)
+         :initial `[{"id": 1, "id": 2, "id": 3, "id": 4, "id": 5}]`
+           `hyprctl -j workspaces | jq '. | sort_by (.id)'`)
+
 
 (defpoll activeWorkspace
          :interval "1s"
@@ -50,17 +109,42 @@
                   :class {activeWorkspace.id == workspace.id ? "w-btn w-btn-act" : "w-btn w-btn-inact"}
                   :onclick "hyprctl dispatch workspace ${workspace.id}"))))
 
+(defpoll windowTitle
+         :interval "1s"
+         :initial-value `[{"title": "nothing"}]`
+         `hyprctl -j activewindow`)
 
-;; (defwidget workspaces []
-;;            (box
-;;             :class "workspaceContainer"
-;;             :halign "start" :valign "center"
-;;             :spacing 10 
-;;             :orientation "h"
+(defwidget winTitle []
+           (label
+            :class "text"
+            :text "${windowTitle.title == 'null' ? 'Nothing to show (T_T) ' : windowTitle.title}"))
 
-;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 1")
-;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 2")
-;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 3")
-;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 4")
-;;                  (button :class "workspaceButton" :onclick "hyprctl dispatch workspace 5")))
+(defwidget tray []
+           (systray
+            :halign "end" :valign "center"
+            :spacing 10
+            :orientation "h"))
+
+(defpoll device
+         :interval "100ms"
+         :initial-value `[{"main": true, active_keymap: "English (US)"}]`
+         `hyprctl -j devices | jq -r '.keyboards[] | select (.main)'`)
+
+(defwidget language []
+           (button
+            :class "text lang"
+            :onclick "hyprctl switchxkblayout ${device.name} next"
+            "${device.active_keymap == 'English (US)' ? 'us' : 'ru'}"))
+
+(defpoll updatesCount
+         :initial-value 0
+         :interval "30m"
+         `checkupdates | wc -l`)
+
+(defwidget updates []
+           (button
+            :class "text updates"
+            :onclick "hyprctl dispatch exec 'kitty sudo pacman -Suy'"
+            "${updatesCount == 0 ? 'no need to update' : 'update ${updatesCount} packages'}"))
+
 
